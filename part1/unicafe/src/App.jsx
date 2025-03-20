@@ -1,5 +1,17 @@
 import { useState } from 'react'
 
+const Statistics = ({allVotes, average, positives}) => {
+
+  return (
+    <>
+      <p>All: {allVotes}</p>
+      <p>Average: {average.toFixed(2)}%</p>
+      <p>Positive: {positives.toFixed(2)}%</p>
+    </>
+  )
+}
+
+
 const App = () => {
 
   const [good, setGood] = useState(0)
@@ -31,9 +43,9 @@ const App = () => {
 
   const average = allVotes === 0 ? 0 : (((good * 1) + (bad * (-1)))/allVotes) * 100
   const positives = allVotes === 0 ? 0 : ((good * 100)/allVotes)
+  console.log('average', average)
   console.log('positives', positives)
 
-  console.log(average)
 
   return (
     <div>
@@ -52,9 +64,18 @@ const App = () => {
 
           <hr />
 
-          <p>All: {allVotes}</p>
-          <p>Average: {average.toFixed(2)}%</p>
-          <p>Positive: {positives.toFixed(2)}%</p>
+          <h2> Statistics</h2>
+
+        { allVotes === 0 ? (
+          <p>No feedback given</p>
+        ): (
+          <Statistics 
+            allVotes={allVotes}
+            average={average}
+            positives={positives}
+          />
+        )}
+
     </div>
   )
 }
