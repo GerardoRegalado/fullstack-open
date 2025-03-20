@@ -21,11 +21,23 @@ const StatisticLine = ({text, value}) => {
 const Statistics = ({allVotes, average, positives}) => {
 
   return (
-    <>
-      <p>All: {allVotes}</p>
-      <p>Average: {average.toFixed(2)}%</p>
-      <p>Positive: {positives.toFixed(2)}%</p>
-    </>
+      <table>
+        <tbody>
+          <tr>
+            <td>All:</td>
+            <td>{allVotes}</td>
+          </tr>
+          <tr>
+            <td>Average:</td>
+            <td>{average}%</td>
+          </tr>
+          <tr>
+            <td>Positives:</td>
+            <td>{positives}%</td>
+          </tr>
+        </tbody>
+
+      </table>
   )
 }
 
@@ -88,8 +100,8 @@ const App = () => {
         ): (
           <Statistics 
             allVotes={allVotes}
-            average={average}
-            positives={positives}
+            average={average.toFixed(2)}
+            positives={positives.toFixed(2)}
           />
         )}
 
