@@ -13,9 +13,15 @@ const App = () => {
     const newContact = {
       name: newName
     }
-    console.log(newContact)
-    setPersons(persons.concat(newContact))
+    const alreadyExist = persons.some(contact => contact.name === newContact.name)
 
+    if(!alreadyExist) {
+      setPersons(persons.concat(newContact))
+      setNewName('')
+    } else {
+      alert(`${newName} already exist`)
+    }
+    
   }
 
   const handleAddContact = (event) => {
