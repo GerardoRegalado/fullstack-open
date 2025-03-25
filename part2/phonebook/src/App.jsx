@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { Filter } from './components/Filter'
+import { PersonForm } from './components/PersonForm'
+import { Persons } from './components/Persons'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -19,7 +22,7 @@ const App = () => {
     const newContact = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1  //in order to do not use index included in map method (line 65)
+      id: persons.length + 1 
     }
     const alreadyExist = persons.some(contact => contact.name === newContact.name)
 
@@ -58,45 +61,31 @@ const App = () => {
 
   return (
     <div>
-      <h1>Phonebook</h1>
 
-      <div>Filter shown with: <input value={search} onChange={handleSearch} /> </div> 
+      <h1>Phonebook</h1>
+      <div>
+        <Filter search={search} onHandleSearch={handleSearch}/>
+      </div>
 
       <h2>Add a new</h2>
-
-      <form onSubmit={addContact}>
-        <div>
-          name: <input value={newName} onChange={handleAddContact}/>
-        </div>
-
-        <div>
-          number: <input value={newNumber} onChange={handleAddNumber} />
-        </div>
-
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-
-
+      <div>
+        <PersonForm 
+          onAddContact={addContact} 
+          newName={newName}
+          onHandleAddContact={handleAddContact}
+          newNumber={newNumber}
+          onHandleAddNumber={handleAddNumber}
+        />
+      </div>
 
       <h2>Numbers</h2>
       <div>
-        {filteredContacts.length > 0 ? (
-          filteredContacts.map((filter) =>
-            <div key={filter.id}>
-              <p>{filter.name} <span>{filter.number}</span></p>
-            </div>
-          )
-        ): (
-          persons.map((person) =>
-            <div key={person.id}>
-              <p>{person.name} <span>{person.number}</span></p>
-            </div>
-            )
-    
-        )}
+        <Persons 
+          filteredContacts={filteredContacts}
+          persons={persons}
+        />
       </div>
+      
     </div>
   )
 }
