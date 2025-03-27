@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Filter } from './components/Filter'
 import { PersonForm } from './components/PersonForm'
 import { Persons } from './components/Persons'
+import { useEffect } from 'react'
+import axios from 'axios'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -14,6 +16,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [search, setSearch] = useState('')
   const [filteredContacts, setFilteredContacts] = useState([])
+
+  const [data, setData] = useState()
 
 
   const addContact = (event) => {
@@ -57,6 +61,25 @@ const App = () => {
       console.log(filtered)
       setFilteredContacts(filtered)
   }
+
+  useEffect(() => {
+    console.log('initializing first useEffect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(
+        response => {
+          console.log('response fulfilled')
+          console.log('response: ', response.data)
+          setData(response.data)
+          console.log('data from first useEffect not available:', data)
+        }
+      )
+  }, [])
+
+  useEffect(()=> {
+    console.log('initializing second useEffect')
+    console.log('data from second useEffect should be available:', data)
+  }, [data])
 
 
   return (
