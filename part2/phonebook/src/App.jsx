@@ -3,14 +3,11 @@ import { Filter } from './components/Filter'
 import { PersonForm } from './components/PersonForm'
 import { Persons } from './components/Persons'
 import { useEffect } from 'react'
-import axios from 'axios'
+import contactServices from './services/contact'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
+
   ]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
@@ -26,18 +23,39 @@ const App = () => {
     const newContact = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1 
     }
     const alreadyExist = persons.some(contact => contact.name === newContact.name)
 
     if(!alreadyExist) {
-      setPersons(persons.concat(newContact))
-      setNewName('')
-      setNewNumber('')
+      contactServices
+      .create(newContact)
+      .then(returnedPersons => {
+        setPersons(persons.concat(returnedPersons))
+        setNewName('')
+        setNewNumber('')
+  
+      })
+      .catch(error => {
+        console.log(error)
+        alert('error saving contact')
+      })
     } else {
-      alert(`${newName} already exist`)
-    }
-    
+
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one`)) {
+        const personForUpdate = persons.find(person => person.name === newContact.name)
+
+        contactServices
+        .update(personForUpdate.id, {...personForUpdate, number: newNumber})
+        .then(updatedPerson => {
+          console.log(updatedPerson)
+          setPersons(persons.map(person => person.id !== updatedPerson.id ? person: updatedPerson))
+          setNewName('')
+          setNewNumber('')
+          setFilteredContacts([])
+        })
+
+      }
+    }   
   }
 
   const handleAddContact = (event) => {
@@ -62,24 +80,29 @@ const App = () => {
       setFilteredContacts(filtered)
   }
 
+  const handleRemove = id => {
+    if (window.confirm("Do you really want to remove contact?")) {
+      contactServices.remove(id).then(response => { console.log(response)})
+      setPersons(persons.filter(person => person.id !== id))
+      setFilteredContacts(filteredContacts.filter(person => person.id !== id))
+    }
+  }
+
+
   useEffect(() => {
     console.log('initializing first useEffect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(
-        response => {
-          console.log('response fulfilled')
-          console.log('response: ', response.data)
-          setData(response.data)
-          console.log('data from first useEffect not available:', data)
-        }
-      )
+    contactServices
+    .getAll()
+    .then(initialContacts => {
+      console.log('response fulfilled')
+      console.log('response: ', initialContacts)
+      setData(initialContacts)
+      setPersons(initialContacts)
+      console.log('data from first useEffect not available:', data)
+    })
   }, [])
 
-  useEffect(()=> {
-    console.log('initializing second useEffect')
-    console.log('data from second useEffect should be available:', data)
-  }, [data])
+
 
 
   return (
@@ -106,6 +129,7 @@ const App = () => {
         <Persons 
           filteredContacts={filteredContacts}
           persons={persons}
+          onRemove={handleRemove}
         />
       </div>
       
